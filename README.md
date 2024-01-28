@@ -9,7 +9,8 @@ instructions on how to set up a Discord bot.
 
 ## Usage
 1. Clone this repository
-2. (Bash-only) Use `setup.sh` to set up your virtual environment
-3. Instruct users to use `start.bat`/`start.sh` to run the program
+2. Create a file `config.toml`, using the provided `config_example.toml` as a guide
+3. *(Bash-only)* Use `setup.sh` to set up your virtual environment
+4. Use `start.bat`/`start.sh` to run the program
     - Log files are saved to `/logs` and rotated at midnight.
     - Log files are automatically excluded from git
