@@ -72,8 +72,19 @@ class Client:
         console = self.open()
         res = console.command("ShowPlayers")
         console.close()
-        # TODO: REFORMAT INTO MORE READABLE OUTPUT
-        return res if res else self.GENERIC_ERROR
+
+        # format output
+        if res:
+            lines = res.split()[1:]
+            buffer = ["## List of connected player names"]
+            for line in lines:
+                words = line.split(",")
+                buffer.append(f"- {words[0]} (Steam ID: {words[2]})")
+            output = "\n".join(buffer)
+        else:
+            output = self.GENERIC_ERROR
+
+        return output
 
     def announce(self, message: str):
         log.debug("Broadcasting message to world")
