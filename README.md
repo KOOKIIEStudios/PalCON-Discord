@@ -18,9 +18,8 @@ instructions on how to set up a Discord bot.
 ## Discord Bot Setup
 1. Create your Discord Bot using the [Discord Developer Portal](https://discord.com/developers/applications)
 2. Click on New Application at the top right of the web page.
-
-![New Application](https://media.discordapp.net/attachments/631249406775132182/1201295694728798269/image.png?ex=65c94ccc&is=65b6d7cc&hm=c337d19900fd088f2551ca4aa1efa2195ee503b831f5d0007a5e3a794069cd80&=&format=webp&quality=lossless&width=1067&height=174)
     - Insert a Name and click `Create` and click on your new Application.
+![New Application](https://media.discordapp.net/attachments/631249406775132182/1201295694728798269/image.png?ex=65c94ccc&is=65b6d7cc&hm=c337d19900fd088f2551ca4aa1efa2195ee503b831f5d0007a5e3a794069cd80&=&format=webp&quality=lossless&width=1067&height=174)
 3. Click on the `Bot` Section of the Discord Application:
 
 ![Bot](https://media.discordapp.net/attachments/631249406775132182/1201296343415652432/image.png?ex=65c94d67&is=65b6d867&hm=2e1a062af0f0b3a85b50279afdfb5c4b0ef84c62d1641c258013300706206a04&=&format=webp&quality=lossless&width=1067&height=333)
