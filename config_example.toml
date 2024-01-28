@@ -1,0 +1,8 @@
+# This is an example config file
+# You should duplicate this file and rename it in the same directory
+# Change all relevant fields before running the bot for the first time
+
+ip = "127.0.0.1"
+port = 25575
+password = ""
+timeout_duration = 3
