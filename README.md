@@ -19,16 +19,17 @@ instructions on how to set up a Discord bot.
 1. Create your Discord Bot using the [Discord Developer Portal](https://discord.com/developers/applications)
 2. Click on New Application at the top right of the web page.
     - Insert a Name and click `Create` and click on your new Application.
-![New Application](https://media.discordapp.net/attachments/631249406775132182/1201295694728798269/image.png?ex=65c94ccc&is=65b6d7cc&hm=c337d19900fd088f2551ca4aa1efa2195ee503b831f5d0007a5e3a794069cd80&=&format=webp&quality=lossless&width=1067&height=174)
+  
+    ![New Application](https://media.discordapp.net/attachments/631249406775132182/1201295694728798269/image.png?ex=65c94ccc&is=65b6d7cc&hm=c337d19900fd088f2551ca4aa1efa2195ee503b831f5d0007a5e3a794069cd80&=&format=webp&quality=lossless&width=1067&height=174)
 3. Click on the `Bot` Section of the Discord Application:
 
-![Bot](https://media.discordapp.net/attachments/631249406775132182/1201296343415652432/image.png?ex=65c94d67&is=65b6d867&hm=2e1a062af0f0b3a85b50279afdfb5c4b0ef84c62d1641c258013300706206a04&=&format=webp&quality=lossless&width=1067&height=333)
+    ![Bot](https://media.discordapp.net/attachments/631249406775132182/1201296343415652432/image.png?ex=65c94d67&is=65b6d867&hm=2e1a062af0f0b3a85b50279afdfb5c4b0ef84c62d1641c258013300706206a04&=&format=webp&quality=lossless&width=1067&height=333)
 4. Copy your discord bot token and put it into the `config.toml` that you've created.
 5. Ensure your discord bot has these settings appropriately marked.
 
-![Discord Bot Settings](https://media.discordapp.net/attachments/631249406775132182/1201297358776975411/image.png?ex=65c94e59&is=65b6d959&hm=211219c172e981c06631b10fca34eedd1fb9c78b8f6293e39d79dba118cd3857&=&format=webp&quality=lossless&width=1023&height=557)
-2. Invite the Discord Bot with the following scopes: bot & applications.commands
+    ![Discord Bot Settings](https://media.discordapp.net/attachments/631249406775132182/1201297358776975411/image.png?ex=65c94e59&is=65b6d959&hm=211219c172e981c06631b10fca34eedd1fb9c78b8f6293e39d79dba118cd3857&=&format=webp&quality=lossless&width=1023&height=557)
+6. Invite the Discord Bot with the following scopes: bot & applications.commands
+   
+   ![Permissions](https://media.discordapp.net/attachments/631249406775132182/1201297573403701379/image.png?ex=65c94e8c&is=65b6d98c&hm=c6a248e6a2a91cc45f3a99c6f3959306363a7eb14751ae15a62794300718b663&=&format=webp&quality=lossless&width=1067&height=363)
 > [!TIP]
 Use a [Discord Permissions Calculator](https://discord.com/developers/applications/1201282683205062676/oauth2/url-generator) to make your life easier!
-
-![Permissions](https://media.discordapp.net/attachments/631249406775132182/1201297573403701379/image.png?ex=65c94e8c&is=65b6d98c&hm=c6a248e6a2a91cc45f3a99c6f3959306363a7eb14751ae15a62794300718b663&=&format=webp&quality=lossless&width=1067&height=363)
