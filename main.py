@@ -5,8 +5,6 @@ import logger
 from client import fetch_config, Client
 from discord import app_commands
 
-GUILD_ID = 631249406775132180
-
 config = fetch_config()
 log = logger.get_logger(__name__)
 
@@ -20,7 +18,7 @@ class DiscordClient(discord.Client):
     async def on_ready(self):
         await self.wait_until_ready()
         if not self.synced:
-            await tree.sync(guild=discord.Object(id=GUILD_ID))
+            await tree.sync()
             self.synced = True
         log.info("Bot is online!")
 
@@ -32,7 +30,6 @@ tree = app_commands.CommandTree(discord_client)
 @tree.command(
     name="info",
     description="Get server information",
-    guilds=[discord.Object(id=GUILD_ID)]
 )
 async def info(interaction: discord.Interaction):
     try:
@@ -46,7 +43,6 @@ async def info(interaction: discord.Interaction):
 @tree.command(
     name="online",
     description="Get information about all online players",
-    guilds=[discord.Object(id=GUILD_ID)]
 )
 async def online(interaction: discord.Interaction):
     try:
