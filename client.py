@@ -1,6 +1,5 @@
 import tomllib
 
-# from rcon.source import Client  # initial, using: https://pypi.org/project/rcon/
 from rcon import Console
 
 import logger
@@ -8,8 +7,8 @@ import logger
 log = logger.get_logger(__name__)
 
 
-# fetch config
 def fetch_config():
+    log.info("Fetching configuration file")
     with open("config.toml", "rb") as file:
         data = tomllib.load(file)
     if data:
@@ -17,23 +16,38 @@ def fetch_config():
     log.error("Unable to read configuration file!")
 
 
-CONFIG = fetch_config()
-
-
 # ------------------------------------------------------------------------------
-# Fallback
+# Fallback - for testing only
 def send_command_fallback(command: str):
+    log.info("Testing RCON connection")
+    config = fetch_config()
     con = Console(
-        host=CONFIG["ip"],
-        password=CONFIG["password"],
-        port=CONFIG["port"],
-        timeout=CONFIG["timeout_duration"]
+        host=config["ip"],
+        password=config["password"],
+        port=config["port"],
+        timeout=config["timeout_duration"]
     )
     res = con.command(command)
     con.close()
 
     log.debug(res)
     return res
-# Initial RCON library wrapper:
-# def get_client(ip="127.0.0.1", port=25575, password="", timeout_duration=3):
-#     return Client(ip, port, passwd=password, timeout=timeout_duration)
+
+
+# ------------------------------------------------------------------------------
+class Client:
+    def __init__(self):
+        log.info("Setting up RCON connection")
+        config = fetch_config()
+        self.CONSOLE = Console(
+            host=config["ip"],
+            password=config["password"],
+            port=config["port"],
+            timeout=config["timeout_duration"]
+        )
+
+    def close(self):
+        log.info("Closing RCON connection")
+        self.CONSOLE.close()
+
+    # Admin Commands:
