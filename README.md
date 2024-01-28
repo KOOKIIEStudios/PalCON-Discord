@@ -33,3 +33,6 @@ instructions on how to set up a Discord bot.
    ![Permissions](https://media.discordapp.net/attachments/631249406775132182/1201297573403701379/image.png?ex=65c94e8c&is=65b6d98c&hm=c6a248e6a2a91cc45f3a99c6f3959306363a7eb14751ae15a62794300718b663&=&format=webp&quality=lossless&width=1067&height=363)
 > [!TIP]
 Use a [Discord Permissions Calculator](https://discord.com/developers/applications/1201282683205062676/oauth2/url-generator) to make your life easier!
+
+> [!IMPORTANT]
+Do note that the slash commands may take up to an hour to propgate for ALL servers the bot is on.
