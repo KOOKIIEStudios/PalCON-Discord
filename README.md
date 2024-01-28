@@ -2,6 +2,15 @@
 A Python-based Discord bot for PalWorld server administration via RCON .
 
 This is an experimental project for a PalWorld remote console via Discord chat bot.
+Control and monitor your Pal World Servers remotely using this Discord Bot.
+
+See Gallery below to view some of the features the bot provides.
+
+## Gallery
+
+![Info](https://media.discordapp.net/attachments/631249406775132182/1201312562092982362/image.png?ex=65c95c82&is=65b6e782&hm=ffd950e5db6144b65336f4e0dace38ff81f98d6457d0966c785023b14bad5e07&=&format=webp&quality=lossless)
+
+![OnlineCommand](https://media.discordapp.net/attachments/1025357797937905746/1201312320371036170/image.png?ex=65c95c48&is=65b6e748&hm=1e36f1ec857df19f623663f5157f213f7340bb3e78033c8af263c78d7692607f&=&format=webp&quality=lossless)
 
 ## Tech Stack
 This project **requires** Python 3.11+; refer to Discord's official documentation for
