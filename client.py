@@ -65,7 +65,7 @@ class Client:
         res = console.command("Save")
         console.close()
         return res if res else self.GENERIC_ERROR
-
+    
     def online(self):
         # Response is of format `name,playerid,steamid`
         log.debug("Fetching online players")

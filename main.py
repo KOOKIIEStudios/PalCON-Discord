@@ -49,7 +49,13 @@ async def info(interaction: discord.Interaction):
     guilds=[discord.Object(id=GUILD_ID)]
 )
 async def online(interaction: discord.Interaction):
-    await interaction.response.send_message(f"Hello")
+    try:
+        rcon_client = Client()
+        output = rcon_client.online()
+    except Exception as e:
+        log.error(f"Exception occurred while executing command: {e}")
+        output = "Unable to process your request (server did not respond)"
+    await interaction.response.send_message(output)
 
 # End of Slash Commands ---------------------------------------------------------------------------------------------
 
