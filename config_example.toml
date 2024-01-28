@@ -6,3 +6,4 @@ ip = "127.0.0.1"
 port = 25575
 password = ""
 timeout_duration = 3
+discord_bot_token = "token_here"

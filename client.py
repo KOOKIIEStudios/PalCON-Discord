@@ -150,7 +150,6 @@ class AsyncClient:
 
     # Admin Commands:
     async def info(self):
-        log.debug("Fetching server info")
         await self.check_console_ready()
         res = await self.CONSOLE.command("Info")
         return res if res else self.GENERIC_ERROR
