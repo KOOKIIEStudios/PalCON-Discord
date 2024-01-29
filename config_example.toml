@@ -9,3 +9,4 @@ timeout_duration = 3
 discord_bot_token = "token_here"
 embed_footer = "@PalCONBot"
 embed_thumbnail = "https://media.discordapp.net/attachments/631249406775132182/1201307493163335680/relaxasarus.png?ex=65c957c9&is=65b6e2c9&hm=e0a820d7130239e6ef16b6bd5ec86bdc1976c63740aaccc842ba19c29f85ecf2&=&format=webp&quality=lossless"
+generic_bot_error = "Unable to process your request"

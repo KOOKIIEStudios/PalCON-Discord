@@ -3,6 +3,7 @@ import tomllib
 from rcon import Console
 from rcon.async_support import Console as AsyncConsole
 
+from data import ServerInfo
 import logger
 
 log = logger.get_logger(__name__)
@@ -39,6 +40,22 @@ def send_command_fallback(command: str):
     return res
 
 
+# Helper functions; RCON client output parsing --------------------------------
+def get_indices_from_info(res: str) -> tuple[int, int, int]:
+    version_number_start_index = -1
+    version_number_end_index = -1
+    name_index = -1
+    for index, char in enumerate(res):
+        if char == "[":
+            version_number_start_index = char + 2
+        if char == "]":
+            version_number_end_index = char
+            name_index = char + 2
+            break
+
+    return version_number_start_index, version_number_end_index, name_index
+
+
 # ------------------------------------------------------------------------------
 # Synchronous implementation; manually starts and stops a connection with every command
 class Client:
@@ -59,12 +76,28 @@ class Client:
         )
 
     # Admin Commands:
-    def info(self):
+    def info(self) -> tuple[ServerInfo | None, str]:
         log.debug("Fetching server info")
         console = self.open()
         res = console.command("Info")
         console.close()
-        return res if res else self.GENERIC_ERROR
+
+        server_info = None
+        error_message = ""
+        if res:
+            version_start_index, version_end_index , name_index = get_indices_from_info(res)
+            if version_start_index < 0 or version_end_index < 0 or name_index < 0:
+                log.error("Unable to parse server info!")
+                error_message = "Unable to process your request (server response in unexpected format)"
+            else:
+                server_info = ServerInfo(
+                    version=res[version_start_index:version_end_index],
+                    name=res[name_index:],
+                )
+        else:
+            error_message = self.GENERIC_ERROR
+
+        return server_info, error_message
 
     def save(self):
         log.debug("Saving world")
@@ -129,7 +162,7 @@ class Client:
     def force_stop(self):
         log.debug(f"Terminating the server forcefully")
         console = self.open()
-        res = console.command(f"DoExit")
+        res = console.command("DoExit")
         console.close()
         # TODO: Check if this is supposed to give a response (and alter accordingly)
         return res if res else self.GENERIC_ERROR

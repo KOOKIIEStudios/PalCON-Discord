@@ -3,8 +3,10 @@ import sys
 import discord
 from discord import app_commands
 
-import logger
 from client import fetch_config, Client
+from data import ServerInfo
+import logger
+
 
 config = fetch_config()
 log = logger.get_logger(__name__)
@@ -44,18 +46,25 @@ def format_embed(embedded_message: discord.Embed) -> None:
 )
 async def info(interaction: discord.Interaction):
     embed_message = None
+    error = config["generic_bot_error"]
     try:
         rcon_client = Client(config=config)
-        output = rcon_client.info()
-        embed_message = discord.Embed(title=output, colour=discord.Colour.blurple(), description="Server Description Here")
-        format_embed(embed_message)
+        server_info, error_message = rcon_client.info()
+        if server_info:
+            embed_message = discord.Embed(
+                title=server_info.name,
+                colour=discord.Colour.blurple(),
+                description=f"Version: {server_info.version}",
+            )
+            format_embed(embed_message)
+        elif error_message:
+            error = error_message
     except Exception as e:
         log.error(f"Exception occurred while executing command: {e}")
-        output = "Unable to process your request (server did not respond)"
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(output)
+        await interaction.response.send_message(error)
 
 
 @tree.command(
