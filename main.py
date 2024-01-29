@@ -31,7 +31,13 @@ discord_client = DiscordClient()
 tree = app_commands.CommandTree(discord_client)
 
 
-# Start of Slash Commands -------------------------------------------------------------------------------------------
+# Bot helper functions ---------------------------------------------------------
+def format_embed(embedded_message: discord.Embed) -> None:
+    embedded_message.set_footer(text=config["embed_footer"])
+    embedded_message.set_thumbnail(url=config["embed_thumbnail"])
+
+
+# Start of Slash Commands ------------------------------------------------------
 @tree.command(
     name="info",
     description="Get server information",
@@ -39,11 +45,10 @@ tree = app_commands.CommandTree(discord_client)
 async def info(interaction: discord.Interaction):
     embed_message = None
     try:
-        rcon_client = Client()
+        rcon_client = Client(config=config)
         output = rcon_client.info()
         embed_message = discord.Embed(title=output, colour=discord.Colour.blurple(), description="Server Description Here")
-        embed_message.set_footer(text="@PalCONBot")
-        embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/631249406775132182/1201307493163335680/relaxasarus.png?ex=65c957c9&is=65b6e2c9&hm=e0a820d7130239e6ef16b6bd5ec86bdc1976c63740aaccc842ba19c29f85ecf2&=&format=webp&quality=lossless")
+        format_embed(embed_message)
     except Exception as e:
         log.error(f"Exception occurred while executing command: {e}")
         output = "Unable to process your request (server did not respond)"
@@ -60,11 +65,10 @@ async def info(interaction: discord.Interaction):
 async def online(interaction: discord.Interaction):
     embed_message = None
     try:
-        rcon_client = Client()
+        rcon_client = Client(config=config)
         output, players = rcon_client.online()
         embed_message = discord.Embed(title="Players Online", colour=discord.Colour.blurple(), description=f"Player(s) Online: {len(players)}")
-        embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/631249406775132182/1201307493163335680/relaxasarus.png?ex=65c957c9&is=65b6e2c9&hm=e0a820d7130239e6ef16b6bd5ec86bdc1976c63740aaccc842ba19c29f85ecf2&=&format=webp&quality=lossless")
-        embed_message.set_footer(text="@PalCONBot")
+        format_embed(embed_message)
 
         # TODO: Add a pagination system for when there are a lot of players online
         list_of_players = ""
@@ -81,19 +85,19 @@ async def online(interaction: discord.Interaction):
         await interaction.response.send_message(output)
 
 
-# End of Slash Commands ---------------------------------------------------------------------------------------------
+# End of Slash Commands --------------------------------------------------------
 def main(discord_bot_token):
+    if not config:
+        logger.shutdown_logger()
+        sys.exit(0)
+    log.info("Configuration files loaded")
+
     log.info("Starting PalCON Discord Bot...")
     discord_client.run(discord_bot_token)
 
 
 if __name__ == "__main__":
-    test_fetch_config = fetch_config()
-    if not test_fetch_config:
-        logger.shutdown_logger()
-        sys.exit(0)
-
-    main(test_fetch_config['discord_bot_token'])
+    main(config["discord_bot_token"])
     
     logger.shutdown_logger()
     sys.exit(0)

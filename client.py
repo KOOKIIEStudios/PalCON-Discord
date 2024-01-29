@@ -42,10 +42,13 @@ def send_command_fallback(command: str):
 # ------------------------------------------------------------------------------
 # Synchronous implementation; manually starts and stops a connection with every command
 class Client:
-    def __init__(self):
+    def __init__(self, config: dict = None):
         self.GENERIC_ERROR = "Unable to process your request (server did not respond)"
         log.info("Setting up RCON connection")
-        self.CONFIG = fetch_config()
+        if config:
+            self.CONFIG = config
+        else:
+            self.CONFIG = fetch_config()
 
     def open(self):
         return Console(
