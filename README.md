@@ -21,7 +21,8 @@ instructions on how to set up a Discord bot.
 ## Environment Installation
 1. Clone this repository
 2. Create a file `config.toml` at the root of the project, using the provided [`config_example.toml`](https://github.com/KOOKIIEStudios/PalCON-Discord/blob/main/config_example.toml) as a guide
-3. *(Bash-only)* Use `setup.sh` to set up your virtual environment
+3. *(Bash-only)* Use `setup.sh` to set up your virtual environment **if you're on Linux**.
+      - If you're on windows, the `start.bat` file will automatically set up your virtual environment!
 4. Use `start.bat`/`start.sh` to run the Discord Bot!
     - Log files are saved to `/logs` and rotated at midnight.
     - Log files are automatically excluded from git
