@@ -12,6 +12,8 @@ See Gallery below to view some of the features the bot provides.
 
 ![OnlineCommand](https://media.discordapp.net/attachments/1025357797937905746/1201312320371036170/image.png?ex=65c95c48&is=65b6e748&hm=1e36f1ec857df19f623663f5157f213f7340bb3e78033c8af263c78d7692607f&=&format=webp&quality=lossless)
 
+![Save](https://github.com/KOOKIIEStudios/PalCON-Discord/assets/58405975/7d518b99-067a-4452-a5d9-4cd02d755b90)
+
 ## Tech Stack
 This project **requires** Python 3.11+; refer to Discord's official documentation for
 instructions on how to set up a Discord bot.
