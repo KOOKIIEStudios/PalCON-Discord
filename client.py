@@ -16,12 +16,16 @@ def fetch_config():
         return data
     log.error("Unable to read configuration file!")
 
-config = fetch_config()
 
 # ------------------------------------------------------------------------------
 # Fallback - for testing only
 def send_command_fallback(command: str):
+    """
+    This is only to manually check if the RCON side works, independently
+    of the Discord bot. It is not and should not be called by the bot.
+    """
     log.info("Testing RCON connection")
+    config = fetch_config()
     con = Console(
         host=config["ip"],
         password=config["password"],

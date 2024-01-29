@@ -1,14 +1,16 @@
 import sys
+
 import discord
+from discord import app_commands
 
 import logger
 from client import fetch_config, Client
-from discord import app_commands
 
 config = fetch_config()
 log = logger.get_logger(__name__)
 
 STEAM_PROFILE_URL = "https://steamcommunity.com/profiles/{steam_id}/"
+
 
 class DiscordClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -24,11 +26,12 @@ class DiscordClient(discord.Client):
             self.synced = True
         log.info("Bot is online!")
 
+
 discord_client = DiscordClient()
 tree = app_commands.CommandTree(discord_client)
 
-# Start of Slash Commands -------------------------------------------------------------------------------------------
 
+# Start of Slash Commands -------------------------------------------------------------------------------------------
 @tree.command(
     name="info",
     description="Get server information",
@@ -48,6 +51,7 @@ async def info(interaction: discord.Interaction):
         await interaction.response.send_message(embed=embed_message)
     else:
         await interaction.response.send_message(output)
+
 
 @tree.command(
     name="online",
@@ -76,11 +80,12 @@ async def online(interaction: discord.Interaction):
     else:
         await interaction.response.send_message(output)
 
-# End of Slash Commands ---------------------------------------------------------------------------------------------
 
+# End of Slash Commands ---------------------------------------------------------------------------------------------
 def main(discord_bot_token):
     log.info("Starting PalCON Discord Bot...")
     discord_client.run(discord_bot_token)
+
 
 if __name__ == "__main__":
     test_fetch_config = fetch_config()
