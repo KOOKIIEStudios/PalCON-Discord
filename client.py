@@ -47,10 +47,10 @@ def get_indices_from_info(res: str) -> tuple[int, int, int]:
     name_index = -1
     for index, char in enumerate(res):
         if char == "[":
-            version_number_start_index = char + 2
+            version_number_start_index = index + 1
         if char == "]":
-            version_number_end_index = char
-            name_index = char + 2
+            version_number_end_index = index
+            name_index = version_number_end_index + 2
             break
 
     return version_number_start_index, version_number_end_index, name_index
