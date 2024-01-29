@@ -2,6 +2,7 @@ import sys
 
 import discord
 from discord import app_commands
+from discord.ext.commands import has_permissions
 
 from client import fetch_config, Client
 import logger
@@ -104,6 +105,7 @@ async def online(interaction: discord.Interaction):
     name="save",
     description="Save the game server state",
 )
+@has_permissions(administrator=True)
 async def save(interaction: discord.Interaction):
     embed_message = None
     error = config["generic_bot_error"]
