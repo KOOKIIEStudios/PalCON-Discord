@@ -55,11 +55,11 @@ async def info(interaction: discord.Interaction):
             embed_message = discord.Embed(
                 title=server_info.name,
                 colour=discord.Colour.blurple(),
-                description=f"Version: {server_info.version}",
+                description=f"Server Version: {server_info.version}",
             )
             format_embed(embed_message)
     except Exception as e:
-        log.error(f"Exception occurred while executing command: {e}")
+        log.error(f"Unable to fetch/send game server info: {e}")
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
@@ -89,11 +89,36 @@ async def online(interaction: discord.Interaction):
         # TODO: Add a pagination system for when there are a lot of players online
         if player_count:
             buffer = []
-            for player in players:
-                buffer.append(f"[{player[0]}]({STEAM_PROFILE_URL.format(steam_id=player[1])})")
+            for key, value in players.items():
+                buffer.append(f"[{value}]({STEAM_PROFILE_URL.format(steam_id=key)})")
             embed_message.add_field(name="Players", value="\n".join(buffer), inline=False)
     except Exception as e:
-        log.error(f"Exception occurred while executing command: {e}")
+        log.error(f"Unable to fetch/send metadata of connected players: {e}")
+    if embed_message:
+        await interaction.response.send_message(embed=embed_message)
+    else:
+        await interaction.response.send_message(error)
+
+
+@tree.command(
+    name="save",
+    description="Save the game server state",
+)
+async def save(interaction: discord.Interaction):
+    embed_message = None
+    error = config["generic_bot_error"]
+    try:
+        rcon_client = Client(config=config)
+        response = rcon_client.save()
+
+        embed_message = discord.Embed(
+            title="Server Saving",
+            colour=discord.Colour.blurple(),
+            description=response,
+        )
+        format_embed(embed_message)
+    except Exception as e:
+        log.error(f"Unable to save game server state: {e}")
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
@@ -103,6 +128,7 @@ async def online(interaction: discord.Interaction):
 # End of Slash Commands --------------------------------------------------------
 def main(discord_bot_token):
     if not config:
+        log.info("Shutting down PalCON...")
         logger.shutdown_logger()
         sys.exit(0)
     log.info("Configuration files loaded")
