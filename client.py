@@ -16,12 +16,12 @@ def fetch_config():
         return data
     log.error("Unable to read configuration file!")
 
+config = fetch_config()
 
 # ------------------------------------------------------------------------------
 # Fallback - for testing only
 def send_command_fallback(command: str):
     log.info("Testing RCON connection")
-    config = fetch_config()
     con = Console(
         host=config["ip"],
         password=config["password"],

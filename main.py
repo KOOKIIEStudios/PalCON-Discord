@@ -34,6 +34,7 @@ tree = app_commands.CommandTree(discord_client)
     description="Get server information",
 )
 async def info(interaction: discord.Interaction):
+    embed_message = None
     try:
         rcon_client = Client()
         output = rcon_client.info()
@@ -53,6 +54,7 @@ async def info(interaction: discord.Interaction):
     description="Get information about all online players",
 )
 async def online(interaction: discord.Interaction):
+    embed_message = None
     try:
         rcon_client = Client()
         output, players = rcon_client.online()
@@ -65,7 +67,6 @@ async def online(interaction: discord.Interaction):
         for player in players:
             list_of_players += f"[{player[0]}]({STEAM_PROFILE_URL.format(steam_id=player[1])})\n"
         embed_message.add_field(name="Players", value=list_of_players, inline=False)
-
     except Exception as e:
         log.error(f"Exception occurred while executing command: {e}")
         output = "Unable to process your request (server did not respond)"
