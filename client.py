@@ -67,7 +67,7 @@ class Client:
         else:
             self.CONFIG = fetch_config()
 
-    def open(self):
+    def open(self) -> Console:
         return Console(
             host=self.CONFIG["ip"],
             password=self.CONFIG["password"],
@@ -77,6 +77,7 @@ class Client:
 
     # Admin Commands:
     def info(self) -> tuple[ServerInfo | None, str]:
+        """Returns the game server name and version number"""
         log.debug("Fetching server info")
         console = self.open()
         res = console.command("Info")
@@ -85,7 +86,7 @@ class Client:
         server_info = None
         error_message = ""
         if res:
-            version_start_index, version_end_index , name_index = get_indices_from_info(res)
+            version_start_index, version_end_index, name_index = get_indices_from_info(res)
             if version_start_index < 0 or version_end_index < 0 or name_index < 0:
                 log.error("Unable to parse server info!")
                 error_message = "Unable to process your request (server response in unexpected format)"
@@ -99,36 +100,35 @@ class Client:
 
         return server_info, error_message
 
-    def save(self):
+    def save(self) -> str:
         log.debug("Saving world")
         console = self.open()
         res = console.command("Save")
         console.close()
         return res if res else self.GENERIC_ERROR
     
-    def online(self):
-        # Response is of format `name,playerid,steamid`
+    def online(self) -> tuple[dict[str, str], str]:
+        """Returns dict of online players, and error message (if any)
+        { Key (Steam ID): Value (IGN) }
+        """
+        # Response is of format `name,playerid,steamid\n`
         log.debug("Fetching online players")
         console = self.open()
         res = console.command("ShowPlayers")
         console.close()
 
-        players = []
+        players = {}
+        error_message = ""
         # format output
         if res:
             lines = res.split()[1:]
-            buffer = ["## List of connected player names"]
             for line in lines:
                 words = line.split(",")
-                name = words[0]
-                steam_id = words[2]
-                players.append((name, steam_id))
-                buffer.append(f"- {words[0]} (Steam ID: {words[2]})")
-            output = "\n".join(buffer)
+                players[words[2]] = words[0]
         else:
-            output = self.GENERIC_ERROR
+            error_message = self.GENERIC_ERROR
 
-        return output, players
+        return players, error_message
 
     def announce(self, message: str):
         log.debug("Broadcasting message to world")

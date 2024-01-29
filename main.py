@@ -4,7 +4,6 @@ import discord
 from discord import app_commands
 
 from client import fetch_config, Client
-from data import ServerInfo
 import logger
 
 
@@ -50,6 +49,8 @@ async def info(interaction: discord.Interaction):
     try:
         rcon_client = Client(config=config)
         server_info, error_message = rcon_client.info()
+        if error_message:
+            error = error_message
         if server_info:
             embed_message = discord.Embed(
                 title=server_info.name,
@@ -57,8 +58,6 @@ async def info(interaction: discord.Interaction):
                 description=f"Version: {server_info.version}",
             )
             format_embed(embed_message)
-        elif error_message:
-            error = error_message
     except Exception as e:
         log.error(f"Exception occurred while executing command: {e}")
     if embed_message:
@@ -73,25 +72,32 @@ async def info(interaction: discord.Interaction):
 )
 async def online(interaction: discord.Interaction):
     embed_message = None
+    error = config["generic_bot_error"]
     try:
         rcon_client = Client(config=config)
-        output, players = rcon_client.online()
-        embed_message = discord.Embed(title="Players Online", colour=discord.Colour.blurple(), description=f"Player(s) Online: {len(players)}")
+        players, error_message = rcon_client.online()
+        if error_message:
+            error = error_message
+        player_count = len(players)
+        embed_message = discord.Embed(
+            title="Players Online",
+            colour=discord.Colour.blurple(),
+            description=f"Player(s) Online: {player_count}",
+        )
         format_embed(embed_message)
 
         # TODO: Add a pagination system for when there are a lot of players online
-        list_of_players = ""
-        for player in players:
-            list_of_players += f"[{player[0]}]({STEAM_PROFILE_URL.format(steam_id=player[1])})\n"
-        embed_message.add_field(name="Players", value=list_of_players, inline=False)
+        if player_count:
+            buffer = []
+            for player in players:
+                buffer.append(f"[{player[0]}]({STEAM_PROFILE_URL.format(steam_id=player[1])})")
+            embed_message.add_field(name="Players", value="\n".join(buffer), inline=False)
     except Exception as e:
         log.error(f"Exception occurred while executing command: {e}")
-        output = "Unable to process your request (server did not respond)"
-
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(output)
+        await interaction.response.send_message(error)
 
 
 # End of Slash Commands --------------------------------------------------------
