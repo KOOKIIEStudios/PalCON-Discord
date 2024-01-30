@@ -14,6 +14,10 @@ See Gallery below to view some of the features the bot provides.
 
 ![Save](https://github.com/KOOKIIEStudios/PalCON-Discord/assets/58405975/7d518b99-067a-4452-a5d9-4cd02d755b90)
 
+![ShutdownSlashCommand](https://github.com/KOOKIIEStudios/PalCON-Discord/assets/58405975/efde4aec-a07d-48f1-80be-894548c5267c)
+
+![Shutdown](https://github.com/KOOKIIEStudios/PalCON-Discord/assets/58405975/e1127f4d-46bf-40f3-bb07-9047dae4d50f)
+
 ## Tech Stack
 This project **requires** Python 3.11+; refer to Discord's official documentation for
 instructions on how to set up a Discord bot.
