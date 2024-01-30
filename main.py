@@ -126,6 +126,29 @@ async def save(interaction: discord.Interaction):
     else:
         await interaction.response.send_message(error)
 
+@tree.command(
+    name="shutdown",
+    description="Shutdown the server, with optional message and delay",
+)
+@has_permissions(administrator=True)
+async def shutdown(interaction: discord.Interaction, seconds: int, message: str):
+    embed_message = None
+    error = config["generic_bot_error"]
+    try:
+        rcon_client = Client(config=config)
+        response = rcon_client.shutdown(seconds, message)
+        embed_message = discord.Embed(
+            title="Server Shutdown",
+            colour=discord.Colour.blurple(),
+            description=response,
+        )
+        format_embed(embed_message)
+    except Exception as e:
+        log.error(f"Unable to shutdown game server: {e}")
+    if embed_message:
+        await interaction.response.send_message(embed=embed_message)
+    else:
+        await interaction.response.send_message(error)
 
 # End of Slash Commands --------------------------------------------------------
 def main(discord_bot_token):
