@@ -126,6 +126,7 @@ async def save(interaction: discord.Interaction):
     else:
         await interaction.response.send_message(error)
 
+
 @tree.command(
     name="shutdown",
     description="Shutdown the server, with optional message and delay",
@@ -136,7 +137,11 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
     error = config["generic_bot_error"]
     try:
         rcon_client = Client(config=config)
-        response = rcon_client.shutdown(seconds, message)
+
+        # remove spaces
+        formatted_message = message.replace(" ", "_")
+
+        response = rcon_client.shutdown(str(seconds), formatted_message)
         embed_message = discord.Embed(
             title="Server Shutdown",
             colour=discord.Colour.blurple(),
@@ -149,6 +154,119 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
         await interaction.response.send_message(embed=embed_message)
     else:
         await interaction.response.send_message(error)
+
+
+@tree.command(
+    name="announce",
+    description="Make an announcement in-game (spaces replaced with underscores)",
+)
+@has_permissions(administrator=True)
+async def announce(interaction: discord.Interaction, message: str):
+    embed_message = None
+    error = config["generic_bot_error"]
+    try:
+        rcon_client = Client(config=config)
+
+        # remove spaces
+        formatted_message = message.replace(" ", "_")
+
+        response = rcon_client.announce(formatted_message)
+
+        embed_message = discord.Embed(
+            title="Making In-game Announcement",
+            colour=discord.Colour.blurple(),
+            description=response,
+        )
+        format_embed(embed_message)
+    except Exception as e:
+        log.error(f"Unable to make game announcement: {e}")
+    if embed_message:
+        await interaction.response.send_message(embed=embed_message)
+    else:
+        await interaction.response.send_message(error)
+
+
+@tree.command(
+    name="kick",
+    description="Kick a player from the game using Steam ID",
+)
+@has_permissions(administrator=True)
+async def kick(interaction: discord.Interaction, steam_id: str):
+    embed_message = None
+    error = config["generic_bot_error"]
+    try:
+        rcon_client = Client(config=config)
+        player_ign = rcon_client.get_ign_from_steam_id(steam_id)
+        formatted_ign = f"[{player_ign}]({STEAM_PROFILE_URL.format(steam_id=steam_id)})" if player_ign else ""
+        response = rcon_client.kick(steam_id)
+
+        embed_message = discord.Embed(
+            title=f"Kicking player {formatted_ign}",
+            colour=discord.Colour.blurple(),
+            description=response,
+        )
+        format_embed(embed_message)
+    except Exception as e:
+        log.error(f"Unable to kick player: {e}")
+    if embed_message:
+        await interaction.response.send_message(embed=embed_message)
+    else:
+        await interaction.response.send_message(error)
+
+
+@tree.command(
+    name="ban_player",
+    description="Ban a player using Steam ID",
+)
+@has_permissions(administrator=True)
+async def ban_player(interaction: discord.Interaction, steam_id: str):
+    embed_message = None
+    error = config["generic_bot_error"]
+    try:
+        rcon_client = Client(config=config)
+        player_ign = rcon_client.get_ign_from_steam_id(steam_id)
+        formatted_ign = f"[{player_ign}]({STEAM_PROFILE_URL.format(steam_id=steam_id)})" if player_ign else ""
+        response = rcon_client.ban(steam_id)
+
+        embed_message = discord.Embed(
+            title=f"Banning player {formatted_ign}",
+            colour=discord.Colour.blurple(),
+            description=response,
+        )
+        format_embed(embed_message)
+    except Exception as e:
+        log.error(f"Unable to ban player: {e}")
+    if embed_message:
+        await interaction.response.send_message(embed=embed_message)
+    else:
+        await interaction.response.send_message(error)
+
+
+@tree.command(
+    name="kill",
+    description="Force-kill the server immediately",
+)
+@has_permissions(administrator=True)
+async def kill(interaction: discord.Interaction):
+    embed_message = None
+    error = config["generic_bot_error"]
+    try:
+        rcon_client = Client(config=config)
+
+        response = rcon_client.force_stop()
+        embed_message = discord.Embed(
+            title="Forcing Server Termination",
+            colour=discord.Colour.blurple(),
+            description=response,
+        )
+        format_embed(embed_message)
+    except Exception as e:
+        log.error(f"Unable to forcibly terminate game server: {e}")
+    if embed_message:
+        await interaction.response.send_message(embed=embed_message)
+    else:
+        await interaction.response.send_message(error)
+
 
 # End of Slash Commands --------------------------------------------------------
 def main(discord_bot_token):

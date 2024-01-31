@@ -130,6 +130,11 @@ class Client:
 
         return players, error_message
 
+    def get_ign_from_steam_id(self, steam_id: str) -> str:
+        """Fetches player name from Steam ID, if player is online"""
+        players, _ = self.online()
+        return players.get(steam_id, "")
+
     def announce(self, message: str):
         log.debug("Broadcasting message to world")
         console = self.open()
