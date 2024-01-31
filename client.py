@@ -27,6 +27,7 @@ def send_command_fallback(command: str):
     """
     log.info("Testing RCON connection")
     config = fetch_config()
+    log.debug(f"IP: {config["ip"]}, Port: {config["port"]}")
     con = Console(
         host=config["ip"],
         password=config["password"],
@@ -240,3 +241,7 @@ class AsyncClient:
         await self.check_console_ready()
         res = await self.CONSOLE.command(f"DoExit")
         return res if res else self.GENERIC_ERROR
+
+if __name__ == "__main__":
+    send_command_fallback("ShowPlayers")
+    logger.shutdown_logger()
