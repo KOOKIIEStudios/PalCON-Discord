@@ -123,7 +123,6 @@ class Client:
         # format output
         if res: # "name,playeruid,steamid\n" this is the header
             lines = res.split()[1:] # remove the header
-            log.debug(lines)
             for line in lines:
                 words = line.split(",")
                 if len(words) != 3:
