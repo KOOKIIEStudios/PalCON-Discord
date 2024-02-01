@@ -37,7 +37,6 @@ def format_embed(embedded_message: discord.Embed) -> None:
 
 
 # Start of Slash Commands ------------------------------------------------------
-
 @tree.command(name="sync", description="Sync commands with Discord")
 @has_permissions(administrator=True)
 async def sync(interaction: discord.Interaction):
