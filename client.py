@@ -122,13 +122,22 @@ class Client:
         error_message = ""
         # format output
         if res: # "name,playeruid,steamid\n" this is the header
-            lines = res.split()[1:] # remove the header
+            lines = res.split('\n')[1:] # remove the header
             for line in lines:
-                words = line.split(",")
-                if len(words) != 3:
+                words = line.split(",")[0:-1] # remove the last element, which is an empty string
+                if len(words) < 3:
+                    log.error(f'Unable to parse player info for player: {words}')
                     break
+
                 ign = words[0]
                 steam_id = words[2]
+
+                if len(words) > 3:
+                    log.debug(f'Ran into a player with more than 3 points of data during parsing: {words}')
+                    # If the player name has a comma, the split will produce more than 3 words
+                    ign = ",".join(words[0:-2])
+                    steam_id = words[-1]
+
                 players[steam_id] = ign
         else:
             error_message = self.GENERIC_ERROR
@@ -247,5 +256,7 @@ class AsyncClient:
         return res if res else self.GENERIC_ERROR
 
 if __name__ == "__main__":
-    send_command_fallback("ShowPlayers")
+    client = Client()
+    players, error = client.online()
+    print(players)
     logger.shutdown_logger()
