@@ -32,6 +32,7 @@ instructions on how to set up a Discord bot.
 4. Use `start.bat`/`start.sh` to run the Discord Bot!
     - Log files are saved to `/logs` and rotated at midnight.
     - Log files are automatically excluded from git
+5. The first time you run the bot, you will need to run the `!sync` command to sync the slash commands to Discord
 
 ## Discord Bot Setup
 1. Create your Discord Bot using the [Discord Developer Portal](https://discord.com/developers/applications)
