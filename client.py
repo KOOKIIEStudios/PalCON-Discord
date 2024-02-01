@@ -121,11 +121,16 @@ class Client:
         players = {}
         error_message = ""
         # format output
-        if res:
-            lines = res.split()[1:]
+        if res: # "name,playeruid,steamid\n" this is the header
+            lines = res.split()[1:] # remove the header
+            log.debug(lines)
             for line in lines:
                 words = line.split(",")
-                players[words[2]] = words[0]
+                if len(words) != 3:
+                    break
+                ign = words[0]
+                steam_id = words[2]
+                players[steam_id] = ign
         else:
             error_message = self.GENERIC_ERROR
 
