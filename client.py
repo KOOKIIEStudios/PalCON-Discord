@@ -27,7 +27,7 @@ def send_command_fallback(command: str):
     """
     log.info("Testing RCON connection")
     config = fetch_config()
-    log.debug(f"IP: {config["ip"]}, Port: {config["port"]}")
+    log.debug(f'IP: {config["ip"]}, Port: {config["port"]}')
     con = Console(
         host=config["ip"],
         password=config["password"],
@@ -166,7 +166,7 @@ class Client:
         return res if res else self.GENERIC_ERROR
 
     def force_stop(self):
-        log.debug(f"Terminating the server forcefully")
+        log.debug("Terminating the server forcefully")
         console = self.open()
         res = console.command("DoExit")
         console.close()
@@ -239,7 +239,7 @@ class AsyncClient:
 
     async def force_stop(self):
         await self.check_console_ready()
-        res = await self.CONSOLE.command(f"DoExit")
+        res = await self.CONSOLE.command("DoExit")
         return res if res else self.GENERIC_ERROR
 
 if __name__ == "__main__":
