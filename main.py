@@ -28,6 +28,7 @@ class DiscordClient(discord.Client):
             return
         if message.content.startswith("!sync") and message.author.guild_permissions.administrator:
             await tree.sync()
+            log.info("Commands synced with Discord")
             await message.channel.send("Commands synced with Discord")
 
 
