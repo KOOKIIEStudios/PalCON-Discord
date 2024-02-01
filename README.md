@@ -33,6 +33,8 @@ We have currently switched to [tama's implementation](https://github.com/ttk1/py
 2. Clone this repository
 3. Create a file `config.toml` at the root of the project, using the provided [`config_example.toml`](https://github.com/KOOKIIEStudios/PalCON-Discord/blob/main/config_example.toml) as a guide
    - For Discord bot token, see the following section for instructions for setting up your own Discord bot
+   - For IP address, use the public IP of your game server if the Discord bot is not on the same machine; otherwise `localhost` is fine
+   - For port and password, see the RCON server set-up section below
 4. *(UNIX-like)* Use `setup.sh` to set up your virtual environment
       - Note: Script files require permissions; e.g.: `chmod +x setup.sh start.sh`
       - If you're on Windows, running the `start.bat` file will automatically set up your virtual environment!
@@ -88,3 +90,21 @@ Use a [Discord Permissions Calculator](https://discord.com/developers/applicatio
 
 > [!IMPORTANT]
 Do note that the slash commands may take up to an hour to propagate for ALL servers the bot is on.
+
+
+## RCON Server Set-up
+1. Open the Palworld configuration file using the appropriate path
+   - The following are relative paths to Steam/SteamCMD's install directory: 
+     - Windows: `steamapps/common/PalServer/Pal/Saved/Config/WindowsServer/PalWorldSettings.ini`
+     - Linux: `steamapps/common/PalServer/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
+2. Scroll all the way to the right of the second line
+3. Set the RCON port using the `RCONPort` variable
+   - e.g. `RCONPort=255575`
+4. Turn on RCON: `RCONEnabled=True`
+5. Set the administrator password for toggling admin mode (this also doubles as the RCON password)
+   - e.g. `AdminPassword="insertpasswordhere"`
+6. Modify firewall rules for the RCON port
+   - e.g. `sudo ufw allow 255575/tcp`
+   - **MAKE SURE YOU'RE AWARE OF THE SECURITY RISKS OF DOING SO**
+7. Port-forward the RCON port
+   - Refer to your router's instructions for more details
