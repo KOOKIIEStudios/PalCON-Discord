@@ -24,6 +24,9 @@ instructions on how to set up a Discord bot.
 
 ## Environment Installation
 0. Download [Python](https://www.python.org/downloads/) and **SET IT TO PATH DURING INSTALLATION**.
+
+![image](https://github.com/KOOKIIEStudios/PalCON-Discord/assets/58405975/abe48ef4-01bb-45d7-81ba-d9b6a38846e0)
+
 1. Clone this repository
 2. Create a file `config.toml` at the root of the project, using the provided [`config_example.toml`](https://github.com/KOOKIIEStudios/PalCON-Discord/blob/main/config_example.toml) as a guide
 3. *(Bash-only)* Use `setup.sh` to set up your virtual environment **if you're on Linux**.
