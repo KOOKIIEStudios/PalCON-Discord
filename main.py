@@ -19,14 +19,16 @@ class DiscordClient(discord.Client):
         intents = discord.Intents.default()
         intents.message_content = True
         super().__init__(*args, **kwargs, intents=intents)
-        self.synced = False
 
     async def on_ready(self):
-        await self.wait_until_ready()
-        if not self.synced:
+        log.info(f"{self.user} has connected to Discord!")
+
+    async def on_message(self, message):
+        if message.author == self.user:
+            return
+        if message.content.startswith("!sync") and message.author.guild_permissions.administrator:
             await tree.sync()
-            self.synced = True
-        log.info("Bot is online!")
+            await message.channel.send("Syncing...")
 
 
 discord_client = DiscordClient()
