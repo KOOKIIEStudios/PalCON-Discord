@@ -23,9 +23,6 @@ class DiscordClient(discord.Client):
 
     async def on_ready(self):
         await self.wait_until_ready()
-        if not self.synced:
-            await tree.sync()
-            self.synced = True
         log.info("Bot is online!")
 
 
@@ -40,6 +37,13 @@ def format_embed(embedded_message: discord.Embed) -> None:
 
 
 # Start of Slash Commands ------------------------------------------------------
+
+@tree.command(name="sync", description="Sync commands with Discord")
+@has_permissions(administrator=True)
+async def sync(interaction: discord.Interaction):
+    await tree.sync()
+    await interaction.response.send_message("Commands synced with Discord")
+
 @tree.command(
     name="info",
     description="Get server information",
