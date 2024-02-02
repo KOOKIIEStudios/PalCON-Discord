@@ -21,7 +21,7 @@ class DiscordClient(discord.Client):
         super().__init__(*args, **kwargs, intents=intents)
 
     async def on_ready(self):
-        log.info(f"{self.user} has connected to Discord!")
+        log.info(f"{self.user.name} has connected to Discord!")
 
     async def on_message(self, message):
         if message.author == self.user:
