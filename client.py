@@ -122,11 +122,13 @@ class Client:
         error_message = ""
         # format output
         if res: # "name,playeruid,steamid\n" this is the header
-            lines = res.split('\n')[1:] # remove the header
+            lines = res.split('\n')[1:-1] # remove the header and last elemement which is always an empty string
+            log.debug(f'Lines: {lines}')
             for line in lines:
-                words = line.split(",")[0:-1] # remove the last element, which is an empty string
+                log.debug(f'Line: {line}')
+                words = line.split(",")
                 if len(words) < 3:
-                    log.error(f'Unable to parse player info for player: {words}')
+                    log.error(f'Unable to parse player info for player, player is missing some information: {words}')
                     break
 
                 ign = words[0]
