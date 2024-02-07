@@ -99,12 +99,12 @@ Do note that the slash commands may take up to an hour to propagate for ALL serv
      - Linux: `steamapps/common/PalServer/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini`
 2. Scroll all the way to the right of the second line
 3. Set the RCON port using the `RCONPort` variable
-   - e.g. `RCONPort=255575`
+   - e.g. `RCONPort=25575`
 4. Turn on RCON: `RCONEnabled=True`
 5. Set the administrator password for toggling admin mode (this also doubles as the RCON password)
    - e.g. `AdminPassword="insertpasswordhere"`
 6. Modify firewall rules for the RCON port
-   - e.g. `sudo ufw allow 255575/tcp`
+   - e.g. `sudo ufw allow 25575/tcp`
    - **MAKE SURE YOU'RE AWARE OF THE SECURITY RISKS OF DOING SO**
 7. Port-forward the RCON port
    - Refer to your router's instructions for more details
