@@ -251,7 +251,6 @@ class Client:
         """
         log.debug("Terminating the server forcefully")
         res = await self.run("DoExit")
-        # TODO: Check if this is supposed to even give a response
 
         if not res:
             raise RuntimeError(self.GENERIC_ERROR)
@@ -275,7 +274,5 @@ if __name__ == "__main__":
                          "that_spans_multiple_lines_as_a_test_for_cut_off_"
                          "on_messages_in_the_in_game_chat"))
     asyncio.run(rcon_client.announce("This is an announcement with spaces"))
-    res = asyncio.run(rcon_client.force_stop())
-    log.debug(res)
 
     logger.shutdown_logger()
