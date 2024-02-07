@@ -24,7 +24,6 @@ async def send_command_fallback(command: str):
     This is only to manually check if the RCON side works, independently
     of the Discord bot. It is not and should not be called by the bot.
     """
-    log.info("Testing RCON connection")
     config = fetch_config()
     log.debug(f'IP: {config["ip"]}, Port: {config["port"]}')
 
@@ -45,10 +44,24 @@ async def send_command_fallback(command: str):
 # Asynchronous implementation
 class Client:
     def __init__(self, config: dict = None):
+        self.GENERIC_ERROR = "No response from server"
+
         if config:
             self.CONFIG = config
         else:
             self.CONFIG = fetch_config()
+
+    async def run(self, command: str, *arguments: str) -> str:
+        """Sends a command asynchronously"""
+        return await rcon(
+            command,
+            *arguments,
+            host=self.CONFIG["ip"],
+            port=self.CONFIG["port"],
+            passwd=self.CONFIG["password"],
+            timeout=self.CONFIG["timeout_duration"],
+            enforce_id=False,
+        )
 
     @staticmethod
     def get_indices_from_info(res: str) -> tuple[int, int, int]:
@@ -78,7 +91,7 @@ class Client:
         res = await self.run("Info")
 
         if not res:
-            raise RuntimeError("No response from server")
+            raise RuntimeError(self.GENERIC_ERROR)
 
         version_start_index, version_end_index, name_index = self.get_indices_from_info(res)
         if version_start_index < 0 or version_end_index < 0 or name_index < 0:
@@ -108,12 +121,12 @@ class Client:
         Raises:
             RuntimeError: No response from server but connection did not time out
         """
-        # Response is of format `<name>,<playerid>,<steamid>\n`
+        # Response is of format `<name>,<player id>,<steam id>\n`
         log.debug("Fetching online players")
         res = await self.run("ShowPlayers")
 
         if not res:
-            raise RuntimeError("No response from server")
+            raise RuntimeError(self.GENERIC_ERROR)
 
         players = {}
         faulty = False
@@ -144,72 +157,122 @@ class Client:
         return players, faulty
 
     # Admin Commands:
-    async def run(self, command: str, *arguments: str) -> str:
-        """Sends a command asynchronously"""
-        return await rcon(
-            command,
-            *arguments,
-            host=self.CONFIG["ip"],
-            port=self.CONFIG["port"],
-            passwd=self.CONFIG["password"],
-            timeout=self.CONFIG["timeout_duration"],
-            enforce_id=False,
-        )
-    
-    def save(self) -> str:
-        log.debug("Saving world")
-        console = self.open()
-        res = console.command("Save")
-        console.close()
-        return res if res else self.GENERIC_ERROR
+    async def save(self) -> str:
+        """Issues command to save on the game server
 
-    def get_ign_from_steam_id(self, steam_id: str) -> str:
-        """Fetches player name from Steam ID, if player is online"""
-        players, _ = self.online()
+        Raises:
+            RuntimeError: No response from server but connection did not time out
+        """
+        log.debug("Saving world")
+        res = await self.run("Save")
+
+        if not res:
+            raise RuntimeError(self.GENERIC_ERROR)
+
+        return res
+
+    async def get_ign_from_steam_id(self, steam_id: str) -> str:
+        """Fetches player name from Steam ID, if player is online
+
+        Defaults to empty string, if name is not found
+
+        Raises:
+            RuntimeError: No response from server but connection did not time out
+        """
+        players, _ = await self.online()
         return players.get(steam_id, "")
 
-    def announce(self, message: str):
+    async def announce(self, message: str):
+        """Sends an in-game announcement
+
+        Raises:
+            RuntimeError: No response from server but connection did not time out
+        """
         log.debug("Broadcasting message to world")
-        console = self.open()
-        res = console.command(f"Broadcast {message}")
-        console.close()
-        # TODO: Consider reformatting server's response
-        return res if res else self.GENERIC_ERROR
+        res = await self.run("Broadcast", message)
 
-    def kick(self, steam_id: str):
+        if not res:
+            raise RuntimeError(self.GENERIC_ERROR)
+
+        return res
+
+    async def kick(self, steam_id: str):
+        """Kicks a player from the game server
+
+        Raises:
+            RuntimeError: No response from server but connection did not time out
+        """
         log.debug("Kicking player from server")
-        console = self.open()
-        res = console.command(f"KickPlayer {steam_id}")
-        console.close()
-        return res if res else self.GENERIC_ERROR
+        res = await self.run("KickPlayer", steam_id)
 
-    def ban(self, steam_id: str):
+        if not res:
+            raise RuntimeError(self.GENERIC_ERROR)
+
+        return res
+
+    async def ban(self, steam_id: str):
+        """Bans a player from the game server
+
+        Raises:
+            RuntimeError: No response from server but connection did not time out
+        """
         log.debug("Banning player from server")
-        console = self.open()
-        res = console.command(f"BanPlayer {steam_id}")
-        console.close()
-        return res if res else self.GENERIC_ERROR
+        res = await self.run("BanPlayer", steam_id)
 
-    def shutdown(self, seconds: str, message: str):
+        if not res:
+            raise RuntimeError(self.GENERIC_ERROR)
+
+        return res
+
+    async def shutdown(self, seconds: str, message: str):
+        """Issue a request to the game server to schedule an elegant shutdown
+
+        Args:
+            seconds: Number of seconds till shutdown
+            message: Announcement to make in-game
+
+        Raises:
+            RuntimeError: No response from server but connection did not time out
+        """
         log.debug(f"Schedule server shutdown in {seconds} seconds")
-        console = self.open()
-        res = console.command(f"Shutdown {seconds} {message}")
-        console.close()
-        return res if res else self.GENERIC_ERROR
+        res = await self.run("Shutdown", seconds, message)
 
-    def force_stop(self):
+        if not res:
+            raise RuntimeError(self.GENERIC_ERROR)
+
+        return res
+
+    async def force_stop(self):
+        """Issue a request to forcefully terminate the game server
+
+        Raises:
+            RuntimeError: No response from server but connection did not time out
+        """
         log.debug("Terminating the server forcefully")
-        console = self.open()
-        res = console.command("DoExit")
-        console.close()
-        # TODO: Check if this is supposed to give a response (and alter accordingly)
-        return res if res else self.GENERIC_ERROR
+        res = await self.run("DoExit")
+        # TODO: Check if this is supposed to even give a response
+
+        if not res:
+            raise RuntimeError(self.GENERIC_ERROR)
+
+        return res
 
 
 if __name__ == "__main__":
+    log.info("Testing RCON connection")
+
+    log.info("Testing raw commands")
     log.info("Grabbing game server info")
     send_command_fallback("Info")
     log.info("Fetching online players")
     send_command_fallback("ShowPlayers")
+
+    log.info("Testing client wrapper using broadcasts")
+    rcon_client = Client()
+    rcon_client.announce("This_is_an_announcement_with_no_spaces")
+    rcon_client.announce("This_is_a_long_announcement_with_no_spaces_"
+                         "that_spans_multiple_lines_as_a_test_for_cut_off_"
+                         "on_messages_in_the_in_game_chat")
+    rcon_client.announce("This is an announcement with spaces")
 
     logger.shutdown_logger()

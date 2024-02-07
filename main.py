@@ -8,8 +8,15 @@ from client import fetch_config, Client
 import logger
 
 
-config = fetch_config()
+# Set-up logger & RCON client
 log = logger.get_logger(__name__)
+CONFIG = fetch_config()
+if not CONFIG:
+    log.info("Shutting down PalCON...")
+    logger.shutdown_logger()
+    sys.exit(0)
+log.info("Configuration files loaded")
+RCON_CLIENT = Client(CONFIG)
 
 STEAM_PROFILE_URL = "https://steamcommunity.com/profiles/{steam_id}/"
 
@@ -35,8 +42,8 @@ tree = app_commands.CommandTree(discord_client)
 
 # Bot helper functions ---------------------------------------------------------
 def format_embed(embedded_message: discord.Embed) -> None:
-    embedded_message.set_footer(text=config["embed_footer"])
-    embedded_message.set_thumbnail(url=config["embed_thumbnail"])
+    embedded_message.set_footer(text=CONFIG["embed_footer"])
+    embedded_message.set_thumbnail(url=CONFIG["embed_thumbnail"])
 
 
 # Start of Slash Commands ------------------------------------------------------
@@ -47,8 +54,7 @@ def format_embed(embedded_message: discord.Embed) -> None:
 async def info(interaction: discord.Interaction):
     embed_message = None
     try:
-        rcon_client = Client(config=config)
-        server_info = await rcon_client.info()
+        server_info = await RCON_CLIENT.info()
         if server_info:
             embed_message = discord.Embed(
                 title=server_info.name,
@@ -61,7 +67,7 @@ async def info(interaction: discord.Interaction):
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(config["generic_bot_error"])
+        await interaction.response.send_message(CONFIG["generic_bot_error"])
 
 
 @tree.command(
@@ -71,8 +77,7 @@ async def info(interaction: discord.Interaction):
 async def online(interaction: discord.Interaction):
     embed_message = None
     try:
-        rcon_client = Client(config=config)
-        players, faulty = rcon_client.online()
+        players, faulty = await RCON_CLIENT.online()
 
         player_count = len(players)
         embed_message = discord.Embed(
@@ -100,7 +105,7 @@ async def online(interaction: discord.Interaction):
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(config["generic_bot_error"])
+        await interaction.response.send_message(CONFIG["generic_bot_error"])
 
 
 @tree.command(
@@ -110,10 +115,8 @@ async def online(interaction: discord.Interaction):
 @has_permissions(administrator=True)
 async def save(interaction: discord.Interaction):
     embed_message = None
-    error = config["generic_bot_error"]
     try:
-        rcon_client = Client(config=config)
-        response = rcon_client.save()
+        response = await RCON_CLIENT.save()
 
         embed_message = discord.Embed(
             title="Server Saving",
@@ -126,7 +129,7 @@ async def save(interaction: discord.Interaction):
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.response.send_message(CONFIG["generic_bot_error"])
 
 
 @tree.command(
@@ -136,14 +139,11 @@ async def save(interaction: discord.Interaction):
 @has_permissions(administrator=True)
 async def shutdown(interaction: discord.Interaction, seconds: int, message: str):
     embed_message = None
-    error = config["generic_bot_error"]
     try:
-        rcon_client = Client(config=config)
-
         # remove spaces
         formatted_message = message.replace(" ", "_")
 
-        response = rcon_client.shutdown(str(seconds), formatted_message)
+        response = await RCON_CLIENT.shutdown(str(seconds), formatted_message)
         embed_message = discord.Embed(
             title="Server Shutdown",
             colour=discord.Colour.blurple(),
@@ -155,7 +155,7 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.response.send_message(CONFIG["generic_bot_error"])
 
 
 @tree.command(
@@ -165,14 +165,11 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
 @has_permissions(administrator=True)
 async def announce(interaction: discord.Interaction, message: str):
     embed_message = None
-    error = config["generic_bot_error"]
     try:
-        rcon_client = Client(config=config)
-
         # remove spaces
         formatted_message = message.replace(" ", "_")
 
-        response = rcon_client.announce(formatted_message)
+        response = await RCON_CLIENT.announce(formatted_message)
 
         embed_message = discord.Embed(
             title="Making In-game Announcement",
@@ -185,7 +182,7 @@ async def announce(interaction: discord.Interaction, message: str):
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.response.send_message(CONFIG["generic_bot_error"])
 
 
 @tree.command(
@@ -195,12 +192,10 @@ async def announce(interaction: discord.Interaction, message: str):
 @has_permissions(administrator=True)
 async def kick(interaction: discord.Interaction, steam_id: str):
     embed_message = None
-    error = config["generic_bot_error"]
     try:
-        rcon_client = Client(config=config)
-        player_ign = rcon_client.get_ign_from_steam_id(steam_id)
+        player_ign = await RCON_CLIENT.get_ign_from_steam_id(steam_id)
         formatted_ign = f"[{player_ign}]({STEAM_PROFILE_URL.format(steam_id=steam_id)})" if player_ign else ""
-        response = rcon_client.kick(steam_id)
+        response = await RCON_CLIENT.kick(steam_id)
 
         embed_message = discord.Embed(
             title=f"Kicking player {formatted_ign}",
@@ -213,7 +208,7 @@ async def kick(interaction: discord.Interaction, steam_id: str):
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.response.send_message(CONFIG["generic_bot_error"])
 
 
 @tree.command(
@@ -223,12 +218,10 @@ async def kick(interaction: discord.Interaction, steam_id: str):
 @has_permissions(administrator=True)
 async def ban_player(interaction: discord.Interaction, steam_id: str):
     embed_message = None
-    error = config["generic_bot_error"]
     try:
-        rcon_client = Client(config=config)
-        player_ign = rcon_client.get_ign_from_steam_id(steam_id)
+        player_ign = await RCON_CLIENT.get_ign_from_steam_id(steam_id)
         formatted_ign = f"[{player_ign}]({STEAM_PROFILE_URL.format(steam_id=steam_id)})" if player_ign else ""
-        response = rcon_client.ban(steam_id)
+        response = await RCON_CLIENT.ban(steam_id)
 
         embed_message = discord.Embed(
             title=f"Banning player {formatted_ign}",
@@ -241,7 +234,7 @@ async def ban_player(interaction: discord.Interaction, steam_id: str):
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.response.send_message(CONFIG["generic_bot_error"])
 
 
 @tree.command(
@@ -251,11 +244,8 @@ async def ban_player(interaction: discord.Interaction, steam_id: str):
 @has_permissions(administrator=True)
 async def kill(interaction: discord.Interaction):
     embed_message = None
-    error = config["generic_bot_error"]
     try:
-        rcon_client = Client(config=config)
-
-        response = rcon_client.force_stop()
+        response = await RCON_CLIENT.force_stop()
         embed_message = discord.Embed(
             title="Forcing Server Termination",
             colour=discord.Colour.blurple(),
@@ -267,19 +257,13 @@ async def kill(interaction: discord.Interaction):
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.response.send_message(CONFIG["generic_bot_error"])
 
 
 # End of Slash Commands --------------------------------------------------------
 def main():
-    if not config:
-        log.info("Shutting down PalCON...")
-        logger.shutdown_logger()
-        sys.exit(0)
-    log.info("Configuration files loaded")
-
     log.info("Starting PalCON Discord Bot...")
-    discord_client.run(config["discord_bot_token"])
+    discord_client.run(CONFIG["discord_bot_token"])
 
 
 if __name__ == "__main__":
