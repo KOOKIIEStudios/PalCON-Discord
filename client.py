@@ -1,3 +1,4 @@
+import asyncio
 import tomllib
 
 from rcon.source import rcon
@@ -263,16 +264,18 @@ if __name__ == "__main__":
 
     log.info("Testing raw commands")
     log.info("Grabbing game server info")
-    send_command_fallback("Info")
+    asyncio.run(send_command_fallback("Info"))
     log.info("Fetching online players")
-    send_command_fallback("ShowPlayers")
+    asyncio.run(send_command_fallback("ShowPlayers"))
 
     log.info("Testing client wrapper using broadcasts")
     rcon_client = Client()
-    rcon_client.announce("This_is_an_announcement_with_no_spaces")
-    rcon_client.announce("This_is_a_long_announcement_with_no_spaces_"
+    asyncio.run(rcon_client.announce("This_is_an_announcement_with_no_spaces"))
+    asyncio.run(rcon_client.announce("This_is_a_long_announcement_with_no_spaces_"
                          "that_spans_multiple_lines_as_a_test_for_cut_off_"
-                         "on_messages_in_the_in_game_chat")
-    rcon_client.announce("This is an announcement with spaces")
+                         "on_messages_in_the_in_game_chat"))
+    asyncio.run(rcon_client.announce("This is an announcement with spaces"))
+    res = asyncio.run(rcon_client.force_stop())
+    log.debug(res)
 
     logger.shutdown_logger()
