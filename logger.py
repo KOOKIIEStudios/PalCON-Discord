@@ -24,7 +24,7 @@ def get_console_handler() -> logging.StreamHandler:
 
 
 def get_file_handler() -> TimedRotatingFileHandler:
-    file_handler = TimedRotatingFileHandler(get_log_path(), when="midnight")
+    file_handler = TimedRotatingFileHandler(get_log_path(), when="midnight", encoding="utf-8")
     file_handler.setFormatter(FORMATTER)
     return file_handler
 
