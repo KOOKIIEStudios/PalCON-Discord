@@ -46,12 +46,9 @@ def format_embed(embedded_message: discord.Embed) -> None:
 )
 async def info(interaction: discord.Interaction):
     embed_message = None
-    error = config["generic_bot_error"]
     try:
         rcon_client = Client(config=config)
-        server_info, error_message = rcon_client.info()
-        if error_message:
-            error = error_message
+        server_info = await rcon_client.info()
         if server_info:
             embed_message = discord.Embed(
                 title=server_info.name,
@@ -64,7 +61,7 @@ async def info(interaction: discord.Interaction):
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.response.send_message(config["generic_bot_error"])
 
 
 @tree.command(
@@ -73,12 +70,10 @@ async def info(interaction: discord.Interaction):
 )
 async def online(interaction: discord.Interaction):
     embed_message = None
-    error = config["generic_bot_error"]
     try:
         rcon_client = Client(config=config)
-        players, error_message = rcon_client.online()
-        if error_message:
-            error = error_message
+        players, faulty = rcon_client.online()
+
         player_count = len(players)
         embed_message = discord.Embed(
             title="Players Online",
@@ -93,12 +88,19 @@ async def online(interaction: discord.Interaction):
             for key, value in players.items():
                 buffer.append(f"[{value}]({STEAM_PROFILE_URL.format(steam_id=key)})")
             embed_message.add_field(name="Players", value="\n".join(buffer), inline=False)
+
+        if faulty:
+            embed_message.add_field(
+                name="Warning",
+                value="One (or more) player's data could not be read, and were skipped.",
+                inline=False
+            )
     except Exception as e:
         log.error(f"Unable to fetch/send metadata of connected players: {e}")
     if embed_message:
         await interaction.response.send_message(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.response.send_message(config["generic_bot_error"])
 
 
 @tree.command(
@@ -269,7 +271,7 @@ async def kill(interaction: discord.Interaction):
 
 
 # End of Slash Commands --------------------------------------------------------
-def main(discord_bot_token):
+def main():
     if not config:
         log.info("Shutting down PalCON...")
         logger.shutdown_logger()
@@ -277,11 +279,11 @@ def main(discord_bot_token):
     log.info("Configuration files loaded")
 
     log.info("Starting PalCON Discord Bot...")
-    discord_client.run(discord_bot_token)
+    discord_client.run(config["discord_bot_token"])
 
 
 if __name__ == "__main__":
-    main(config["discord_bot_token"])
+    main()
     
     logger.shutdown_logger()
     sys.exit(0)
