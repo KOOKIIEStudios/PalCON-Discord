@@ -150,6 +150,13 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
             description=response,
         )
         format_embed(embed_message)
+
+        if len(message) > 50:
+            embed_message.add_field(
+                name="Warning",
+                value="Messages longer than 50 characters will be truncated.",
+                inline=False
+            )
     except Exception as e:
         log.error(f"Unable to shutdown game server: {e}")
     if embed_message:
@@ -177,6 +184,13 @@ async def announce(interaction: discord.Interaction, message: str):
             description=response,
         )
         format_embed(embed_message)
+
+        if len(message) > 50:
+            embed_message.add_field(
+                name="Warning",
+                value="Messages longer than 50 characters will be truncated.",
+                inline=False
+            )
     except Exception as e:
         log.error(f"Unable to make game announcement: {e}")
     if embed_message:

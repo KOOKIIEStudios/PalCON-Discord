@@ -264,15 +264,8 @@ if __name__ == "__main__":
     log.info("Testing raw commands")
     log.info("Grabbing game server info")
     asyncio.run(send_command_fallback("Info"))
-    log.info("Fetching online players")
-    asyncio.run(send_command_fallback("ShowPlayers"))
 
     log.info("Testing client wrapper using broadcasts")
     rcon_client = Client()
     asyncio.run(rcon_client.announce("This_is_an_announcement_with_no_spaces"))
-    asyncio.run(rcon_client.announce("This_is_a_long_announcement_with_no_spaces_"
-                         "that_spans_multiple_lines_as_a_test_for_cut_off_"
-                         "on_messages_in_the_in_game_chat"))
-    asyncio.run(rcon_client.announce("This is an announcement with spaces"))
-
     logger.shutdown_logger()
