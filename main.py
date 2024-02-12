@@ -2,7 +2,6 @@ import sys
 
 import discord
 from discord import app_commands
-from discord.ext.commands import has_permissions
 
 from client import fetch_config, Client
 import logger
@@ -105,7 +104,7 @@ async def online(interaction: discord.Interaction):
     name="save",
     description="Save the game server state",
 )
-@has_permissions(administrator=True)
+@app_commands.checks.has_permissions(administrator=True)
 async def save(interaction: discord.Interaction):
     embed_message = None
     error = config["generic_bot_error"]
@@ -126,12 +125,16 @@ async def save(interaction: discord.Interaction):
     else:
         await interaction.response.send_message(error)
 
+@save.error
+async def save_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("You do not have the required permissions to use this command.")
 
 @tree.command(
     name="shutdown",
     description="Shutdown the server, with optional message and delay",
 )
-@has_permissions(administrator=True)
+@app_commands.checks.has_permissions(administrator=True)
 async def shutdown(interaction: discord.Interaction, seconds: int, message: str):
     embed_message = None
     error = config["generic_bot_error"]
@@ -155,12 +158,16 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
     else:
         await interaction.response.send_message(error)
 
+@shutdown.error
+async def shutdown_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("You do not have the required permissions to use this command.")
 
 @tree.command(
     name="announce",
     description="Make an announcement in-game (spaces replaced with underscores)",
 )
-@has_permissions(administrator=True)
+@app_commands.checks.has_permissions(administrator=True)
 async def announce(interaction: discord.Interaction, message: str):
     embed_message = None
     error = config["generic_bot_error"]
@@ -185,12 +192,16 @@ async def announce(interaction: discord.Interaction, message: str):
     else:
         await interaction.response.send_message(error)
 
+@announce.error
+async def announce_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("You do not have the required permissions to use this command.")
 
 @tree.command(
     name="kick",
     description="Kick a player from the game using Steam ID",
 )
-@has_permissions(administrator=True)
+@app_commands.checks.has_permissions(administrator=True)
 async def kick(interaction: discord.Interaction, steam_id: str):
     embed_message = None
     error = config["generic_bot_error"]
@@ -213,12 +224,16 @@ async def kick(interaction: discord.Interaction, steam_id: str):
     else:
         await interaction.response.send_message(error)
 
+@kick.error
+async def kick_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("You do not have the required permissions to use this command.")
 
 @tree.command(
     name="ban_player",
     description="Ban a player using Steam ID",
 )
-@has_permissions(administrator=True)
+@app_commands.checks.has_permissions(administrator=True)
 async def ban_player(interaction: discord.Interaction, steam_id: str):
     embed_message = None
     error = config["generic_bot_error"]
@@ -241,12 +256,16 @@ async def ban_player(interaction: discord.Interaction, steam_id: str):
     else:
         await interaction.response.send_message(error)
 
+@ban_player.error
+async def ban_player_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("You do not have the required permissions to use this command.")
 
 @tree.command(
     name="kill",
     description="Force-kill the server immediately",
 )
-@has_permissions(administrator=True)
+@app_commands.checks.has_permissions(administrator=True)
 async def kill(interaction: discord.Interaction):
     embed_message = None
     error = config["generic_bot_error"]
@@ -267,6 +286,10 @@ async def kill(interaction: discord.Interaction):
     else:
         await interaction.response.send_message(error)
 
+@kill.error
+async def kill_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("You do not have the required permissions to use this command.")
 
 # End of Slash Commands --------------------------------------------------------
 def main(discord_bot_token):
