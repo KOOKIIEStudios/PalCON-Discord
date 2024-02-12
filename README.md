@@ -70,8 +70,6 @@ This is only a temporary measure until Ubuntu officially adds support for Python
 We don't provide release versions, nor package the contents of this repository, 
 so you can update to the latest version by simply performing `git pull`.
 
-Note that [pull request #5](https://github.com/KOOKIIEStudios/PalCON-Discord/pull/5) has made command-syncing invocation-based, instead of occurring automatically on-ready. This means that when you wish to update PalCON, you'll need to call the `/sync` command as an administrator in Discord, after you pulled changes.
-
 ## Discord Bot Setup
 1. Create your Discord Bot using the [Discord Developer Portal](https://discord.com/developers/applications)
 2. Click on New Application at the top right of the web page.
