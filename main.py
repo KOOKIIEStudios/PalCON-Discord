@@ -99,7 +99,7 @@ async def online(interaction: discord.Interaction):
     if embed_message:
         await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.followup.send(error)
+        await interaction.followup.send(content=error)
 
 
 @tree.command(
@@ -126,7 +126,7 @@ async def save(interaction: discord.Interaction):
     if embed_message:
         await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.followup.send(error)
+        await interaction.followup.send(content=error)
 
 @save.error
 async def save_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -160,7 +160,7 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
     if embed_message:
         await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.followup.send(error)
+        await interaction.followup.send(content=error)
 
 @shutdown.error
 async def shutdown_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -195,7 +195,7 @@ async def announce(interaction: discord.Interaction, message: str):
     if embed_message:
         await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.followup.send(error)
+        await interaction.followup.send(content=error)
 
 @announce.error
 async def announce_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -228,7 +228,7 @@ async def kick(interaction: discord.Interaction, steam_id: str):
     if embed_message:
         await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.followup.send(error)
+        await interaction.followup.send(content=error)
 
 @kick.error
 async def kick_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -261,7 +261,7 @@ async def ban_player(interaction: discord.Interaction, steam_id: str):
     if embed_message:
         await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.followup.send(error)
+        await interaction.followup.send(content=error)
 
 @ban_player.error
 async def ban_player_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -292,7 +292,7 @@ async def kill(interaction: discord.Interaction):
     if embed_message:
         await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.followup.send(error)
+        await interaction.followup.send(content=error)
 
 @kill.error
 async def kill_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
