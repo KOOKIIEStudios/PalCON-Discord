@@ -64,7 +64,7 @@ async def info(interaction: discord.Interaction):
     if embed_message:
         await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.followup.send(error)
+        await interaction.followup.send(content=error)
 
 
 @tree.command(
