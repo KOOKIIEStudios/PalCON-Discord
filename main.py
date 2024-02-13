@@ -44,6 +44,7 @@ def format_embed(embedded_message: discord.Embed) -> None:
     description="Get server information",
 )
 async def info(interaction: discord.Interaction):
+    await interaction.response.defer()
     embed_message = None
     error = config["generic_bot_error"]
     try:
@@ -61,9 +62,9 @@ async def info(interaction: discord.Interaction):
     except Exception as e:
         log.error(f"Unable to fetch/send game server info: {e}")
     if embed_message:
-        await interaction.response.send_message(embed=embed_message)
+        await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.followup.send(error)
 
 
 @tree.command(
@@ -71,6 +72,7 @@ async def info(interaction: discord.Interaction):
     description="Get information about all online players",
 )
 async def online(interaction: discord.Interaction):
+    await interaction.response.defer()
     embed_message = None
     error = config["generic_bot_error"]
     try:
@@ -95,9 +97,9 @@ async def online(interaction: discord.Interaction):
     except Exception as e:
         log.error(f"Unable to fetch/send metadata of connected players: {e}")
     if embed_message:
-        await interaction.response.send_message(embed=embed_message)
+        await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.followup.send(error)
 
 
 @tree.command(
@@ -106,6 +108,7 @@ async def online(interaction: discord.Interaction):
 )
 @app_commands.checks.has_permissions(administrator=True)
 async def save(interaction: discord.Interaction):
+    await interaction.response.defer()
     embed_message = None
     error = config["generic_bot_error"]
     try:
@@ -121,9 +124,9 @@ async def save(interaction: discord.Interaction):
     except Exception as e:
         log.error(f"Unable to save game server state: {e}")
     if embed_message:
-        await interaction.response.send_message(embed=embed_message)
+        await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.followup.send(error)
 
 @save.error
 async def save_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -136,6 +139,7 @@ async def save_error(interaction: discord.Interaction, error: app_commands.AppCo
 )
 @app_commands.checks.has_permissions(administrator=True)
 async def shutdown(interaction: discord.Interaction, seconds: int, message: str):
+    await interaction.response.defer()
     embed_message = None
     error = config["generic_bot_error"]
     try:
@@ -154,9 +158,9 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
     except Exception as e:
         log.error(f"Unable to shutdown game server: {e}")
     if embed_message:
-        await interaction.response.send_message(embed=embed_message)
+        await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.followup.send(error)
 
 @shutdown.error
 async def shutdown_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -169,6 +173,7 @@ async def shutdown_error(interaction: discord.Interaction, error: app_commands.A
 )
 @app_commands.checks.has_permissions(administrator=True)
 async def announce(interaction: discord.Interaction, message: str):
+    await interaction.response.defer()
     embed_message = None
     error = config["generic_bot_error"]
     try:
@@ -188,9 +193,9 @@ async def announce(interaction: discord.Interaction, message: str):
     except Exception as e:
         log.error(f"Unable to make game announcement: {e}")
     if embed_message:
-        await interaction.response.send_message(embed=embed_message)
+        await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.followup.send(error)
 
 @announce.error
 async def announce_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -203,6 +208,7 @@ async def announce_error(interaction: discord.Interaction, error: app_commands.A
 )
 @app_commands.checks.has_permissions(administrator=True)
 async def kick(interaction: discord.Interaction, steam_id: str):
+    await interaction.response.defer()
     embed_message = None
     error = config["generic_bot_error"]
     try:
@@ -220,9 +226,9 @@ async def kick(interaction: discord.Interaction, steam_id: str):
     except Exception as e:
         log.error(f"Unable to kick player: {e}")
     if embed_message:
-        await interaction.response.send_message(embed=embed_message)
+        await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.followup.send(error)
 
 @kick.error
 async def kick_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -235,6 +241,7 @@ async def kick_error(interaction: discord.Interaction, error: app_commands.AppCo
 )
 @app_commands.checks.has_permissions(administrator=True)
 async def ban_player(interaction: discord.Interaction, steam_id: str):
+    await interaction.response.defer()
     embed_message = None
     error = config["generic_bot_error"]
     try:
@@ -252,9 +259,9 @@ async def ban_player(interaction: discord.Interaction, steam_id: str):
     except Exception as e:
         log.error(f"Unable to ban player: {e}")
     if embed_message:
-        await interaction.response.send_message(embed=embed_message)
+        await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.followup.send(error)
 
 @ban_player.error
 async def ban_player_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -267,6 +274,7 @@ async def ban_player_error(interaction: discord.Interaction, error: app_commands
 )
 @app_commands.checks.has_permissions(administrator=True)
 async def kill(interaction: discord.Interaction):
+    await interaction.response.defer()
     embed_message = None
     error = config["generic_bot_error"]
     try:
@@ -282,9 +290,9 @@ async def kill(interaction: discord.Interaction):
     except Exception as e:
         log.error(f"Unable to forcibly terminate game server: {e}")
     if embed_message:
-        await interaction.response.send_message(embed=embed_message)
+        await interaction.followup.send(embed=embed_message)
     else:
-        await interaction.response.send_message(error)
+        await interaction.followup.send(error)
 
 @kill.error
 async def kill_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
