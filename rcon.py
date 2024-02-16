@@ -54,7 +54,7 @@ class RconPacket:
         return RconPacket(size=size, id=request_id, type=type, body=body)
 
 
-class SourceRcon:
+class RconClient:
     def __init__(self, server_ip: str, rcon_port: int, rcon_password: str, timeout: Optional[int] = 10) -> None:
         self.SERVER_IP = server_ip
         self.RCON_PORT = rcon_port

@@ -1,6 +1,6 @@
 import tomllib
 
-from rcon import SourceRcon
+from rcon import RconClient
 import logger
 
 log = logger.get_logger(__name__)
@@ -25,7 +25,7 @@ def send_command_fallback(command: str):
     log.info("Testing RCON connection")
     config = fetch_config()
     log.debug(f'IP: {config["ip"]}, Port: {config["port"]}')
-    con = SourceRcon(
+    con = RconClient(
         server_ip=config["ip"],
         rcon_password=config["password"],
         rcon_port=config["port"],
@@ -48,8 +48,8 @@ class Client:
         else:
             self.CONFIG = fetch_config()
 
-    def open(self) -> SourceRcon:
-        return SourceRcon(
+    def open(self) -> RconClient:
+        return RconClient(
             server_ip=self.CONFIG["ip"],
             rcon_password=self.CONFIG["password"],
             rcon_port=self.CONFIG["port"],
