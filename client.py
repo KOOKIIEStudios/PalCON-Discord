@@ -1,9 +1,6 @@
 import tomllib
 
-from rcon import Console
-from rcon.async_support import Console as AsyncConsole
-
-from data import ServerInfo
+from rcon import SourceRcon
 import logger
 
 log = logger.get_logger(__name__)
@@ -28,33 +25,16 @@ def send_command_fallback(command: str):
     log.info("Testing RCON connection")
     config = fetch_config()
     log.debug(f'IP: {config["ip"]}, Port: {config["port"]}')
-    con = Console(
-        host=config["ip"],
-        password=config["password"],
-        port=config["port"],
+    con = SourceRcon(
+        server_ip=config["ip"],
+        rcon_password=config["password"],
+        rcon_port=config["port"],
         timeout=config["timeout_duration"]
     )
-    res = con.command(command)
-    con.close()
+    res = con.send_command(command=command)
 
     log.debug(res)
     return res
-
-
-# Helper functions; RCON client output parsing --------------------------------
-def get_indices_from_info(res: str) -> tuple[int, int, int]:
-    version_number_start_index = -1
-    version_number_end_index = -1
-    name_index = -1
-    for index, char in enumerate(res):
-        if char == "[":
-            version_number_start_index = index + 1
-        if char == "]":
-            version_number_end_index = index
-            name_index = version_number_end_index + 2
-            break
-
-    return version_number_start_index, version_number_end_index, name_index
 
 
 # ------------------------------------------------------------------------------
@@ -68,44 +48,30 @@ class Client:
         else:
             self.CONFIG = fetch_config()
 
-    def open(self) -> Console:
-        return Console(
-            host=self.CONFIG["ip"],
-            password=self.CONFIG["password"],
-            port=self.CONFIG["port"],
+    def open(self) -> SourceRcon:
+        return SourceRcon(
+            server_ip=self.CONFIG["ip"],
+            rcon_password=self.CONFIG["password"],
+            rcon_port=self.CONFIG["port"],
             timeout=self.CONFIG["timeout_duration"]
         )
 
-    # Admin Commands:
-    def info(self) -> tuple[ServerInfo | None, str]:
-        """Returns the game server name and version number"""
+    def info(self) -> tuple[str | None, str]:
+        """
+        Returns the game server name and version number
+        """
         log.debug("Fetching server info")
         console = self.open()
-        res = console.command("Info")
-        console.close()
-
-        server_info = None
-        error_message = ""
-        if res:
-            version_start_index, version_end_index, name_index = get_indices_from_info(res)
-            if version_start_index < 0 or version_end_index < 0 or name_index < 0:
-                log.error("Unable to parse server info!")
-                error_message = "Unable to process your request (server response in unexpected format)"
-            else:
-                server_info = ServerInfo(
-                    version=res[version_start_index:version_end_index],
-                    name=res[name_index:],
-                )
-        else:
-            error_message = self.GENERIC_ERROR
-
-        return server_info, error_message
+        res = console.send_command("Info")
+        return res, self.GENERIC_ERROR if not res else ""
 
     def save(self) -> str:
+        """
+        Saves the game world
+        """
         log.debug("Saving world")
         console = self.open()
-        res = console.command("Save")
-        console.close()
+        res = console.send_command("Save")
         return res if res else self.GENERIC_ERROR
     
     def online(self) -> tuple[dict[str, str], str]:
@@ -115,8 +81,7 @@ class Client:
         # Response is of format `name,playerid,steamid\n`
         log.debug("Fetching online players")
         console = self.open()
-        res = console.command("ShowPlayers")
-        console.close()
+        res = console.send_command("ShowPlayers")
 
         players = {}
         error_message = ""
@@ -151,41 +116,49 @@ class Client:
         players, _ = self.online()
         return players.get(steam_id, "")
 
-    def announce(self, message: str):
-        log.debug("Broadcasting message to world")
+    def announce(self, message: str) -> str:
+        """
+        Broadcasts a message to all players
+        """
         console = self.open()
-        res = console.command(f"Broadcast {message}")
-        console.close()
+        res = console.send_command(f"Broadcast {message}")
         # TODO: Consider reformatting server's response
         return res if res else self.GENERIC_ERROR
 
-    def kick(self, steam_id: str):
+    def kick(self, steam_id: str) -> str:
+        """
+        Kicks a player from the server
+        """
         log.debug("Kicking player from server")
         console = self.open()
-        res = console.command(f"KickPlayer {steam_id}")
-        console.close()
+        res = console.send_command(f"KickPlayer {steam_id}")
         return res if res else self.GENERIC_ERROR
 
-    def ban(self, steam_id: str):
+    def ban(self, steam_id: str) -> str:
+        """
+        Bans a player from the server
+        """
         log.debug("Banning player from server")
         console = self.open()
-        res = console.command(f"BanPlayer {steam_id}")
-        console.close()
+        res = console.send_command(f"BanPlayer {steam_id}")
         return res if res else self.GENERIC_ERROR
 
-    def shutdown(self, seconds: str, message: str):
+    def shutdown(self, seconds: str, message: str) -> str:
+        """
+        Schedules a server shutdown in `seconds` seconds
+        """
         log.debug(f"Schedule server shutdown in {seconds} seconds")
         console = self.open()
-        res = console.command(f"Shutdown {seconds} {message}")
-        console.close()
+        res = console.send_command(f"Shutdown {seconds} {message}")
         return res if res else self.GENERIC_ERROR
 
-    def force_stop(self):
+    def force_stop(self) -> str:
+        """
+        Forcefully terminates the server
+        """
         log.debug("Terminating the server forcefully")
         console = self.open()
-        res = console.command("DoExit")
-        console.close()
-        # TODO: Check if this is supposed to give a response (and alter accordingly)
+        res = console.send_command("DoExit")
         return res if res else self.GENERIC_ERROR
 
 
@@ -193,69 +166,69 @@ class Client:
 # Async implementation; connection remains open throughout lifetime
 # This is listed as experimental on the library's docs, for use with Discord bots
 # In my testing, it doesn't receive the correct number of bytes as of 28th Jan 2024
-class AsyncClient:
-    def __init__(self):
-        self.GENERIC_ERROR = "Unable to process your request (server did not respond)"
-        log.info("Setting up RCON connection")
-        config = fetch_config()
-        self.CONSOLE = AsyncConsole(
-            host=config["ip"],
-            password=config["password"],
-            port=config["port"],
-            timeout=config["timeout_duration"]
-        )
+# class AsyncClient:
+#     def __init__(self):
+#         self.GENERIC_ERROR = "Unable to process your request (server did not respond)"
+#         log.info("Setting up RCON connection")
+#         config = fetch_config()
+#         self.CONSOLE = AsyncConsole(
+#             host=config["ip"],
+#             password=config["password"],
+#             port=config["port"],
+#             timeout=config["timeout_duration"]
+#         )
 
-    async def check_console_ready(self):
-        if not self.CONSOLE.is_open():
-            await self.CONSOLE.open()
+#     async def check_console_ready(self):
+#         if not self.CONSOLE.is_open():
+#             await self.CONSOLE.open()
 
-    async def close(self):
-        log.info("Closing RCON connection")
-        await self.CONSOLE.close()
+#     async def close(self):
+#         log.info("Closing RCON connection")
+#         await self.CONSOLE.close()
 
-    # Admin Commands:
-    async def info(self):
-        await self.check_console_ready()
-        res = await self.CONSOLE.command("Info")
-        return res if res else self.GENERIC_ERROR
+#     # Admin Commands:
+#     async def info(self):
+#         await self.check_console_ready()
+#         res = await self.CONSOLE.command("Info")
+#         return res if res else self.GENERIC_ERROR
 
-    async def save(self):
-        await self.check_console_ready()
-        res = await self.CONSOLE.command("Save")
-        return res if res else self.GENERIC_ERROR
+#     async def save(self):
+#         await self.check_console_ready()
+#         res = await self.CONSOLE.command("Save")
+#         return res if res else self.GENERIC_ERROR
 
-    async def online(self):
-        # Response is of format `name,playerid,steamid`
-        await self.check_console_ready()
-        res = await self.CONSOLE.command("ShowPlayers")
-        # TODO: REFORMAT INTO MORE READABLE OUTPUT
-        return res if res else self.GENERIC_ERROR
+#     async def online(self):
+#         # Response is of format `name,playerid,steamid`
+#         await self.check_console_ready()
+#         res = await self.CONSOLE.command("ShowPlayers")
+#         # TODO: REFORMAT INTO MORE READABLE OUTPUT
+#         return res if res else self.GENERIC_ERROR
 
-    async def announce(self, message: str):
-        await self.check_console_ready()
-        res = await self.CONSOLE.command(f"Broadcast {message}")
-        # TODO: Consider reformatting reply
-        return res if res else self.GENERIC_ERROR
+#     async def announce(self, message: str):
+#         await self.check_console_ready()
+#         res = await self.CONSOLE.command(f"Broadcast {message}")
+#         # TODO: Consider reformatting reply
+#         return res if res else self.GENERIC_ERROR
 
-    async def kick(self, steam_id: str):
-        await self.check_console_ready()
-        res = await self.CONSOLE.command(f"KickPlayer {steam_id}")
-        return res if res else self.GENERIC_ERROR
+#     async def kick(self, steam_id: str):
+#         await self.check_console_ready()
+#         res = await self.CONSOLE.command(f"KickPlayer {steam_id}")
+#         return res if res else self.GENERIC_ERROR
 
-    async def ban(self, steam_id: str):
-        await self.check_console_ready()
-        res = await self.CONSOLE.command(f"BanPlayer {steam_id}")
-        return res if res else self.GENERIC_ERROR
+#     async def ban(self, steam_id: str):
+#         await self.check_console_ready()
+#         res = await self.CONSOLE.command(f"BanPlayer {steam_id}")
+#         return res if res else self.GENERIC_ERROR
 
-    async def shutdown(self, seconds: str, message: str):
-        await self.check_console_ready()
-        res = await self.CONSOLE.command(f"Shutdown {seconds} {message}")
-        return res if res else self.GENERIC_ERROR
+#     async def shutdown(self, seconds: str, message: str):
+#         await self.check_console_ready()
+#         res = await self.CONSOLE.command(f"Shutdown {seconds} {message}")
+#         return res if res else self.GENERIC_ERROR
 
-    async def force_stop(self):
-        await self.check_console_ready()
-        res = await self.CONSOLE.command("DoExit")
-        return res if res else self.GENERIC_ERROR
+#     async def force_stop(self):
+#         await self.check_console_ready()
+#         res = await self.CONSOLE.command("DoExit")
+#         return res if res else self.GENERIC_ERROR
 
 if __name__ == "__main__":
     client = Client()

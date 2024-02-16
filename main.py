@@ -145,10 +145,7 @@ async def shutdown(interaction: discord.Interaction, seconds: int, message: str)
     try:
         rcon_client = Client(config=config)
 
-        # remove spaces
-        formatted_message = message.replace(" ", "_")
-
-        response = rcon_client.shutdown(str(seconds), formatted_message)
+        response = rcon_client.shutdown(str(seconds), message)
         embed_message = discord.Embed(
             title="Server Shutdown",
             colour=discord.Colour.blurple(),
@@ -169,7 +166,7 @@ async def shutdown_error(interaction: discord.Interaction, error: app_commands.A
 
 @tree.command(
     name="announce",
-    description="Make an announcement in-game (spaces replaced with underscores)",
+    description="Make an announcement in-game",
 )
 @app_commands.checks.has_permissions(administrator=True)
 async def announce(interaction: discord.Interaction, message: str):
@@ -178,11 +175,7 @@ async def announce(interaction: discord.Interaction, message: str):
     error = config["generic_bot_error"]
     try:
         rcon_client = Client(config=config)
-
-        # remove spaces
-        formatted_message = message.replace(" ", "_")
-
-        response = rcon_client.announce(formatted_message)
+        response = rcon_client.announce(message)
 
         embed_message = discord.Embed(
             title="Making In-game Announcement",
