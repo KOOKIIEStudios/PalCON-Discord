@@ -54,9 +54,9 @@ async def info(interaction: discord.Interaction):
             error = error_message
         if server_info:
             embed_message = discord.Embed(
-                title=server_info.name,
+                title="Server Information",
                 colour=discord.Colour.blurple(),
-                description=f"Server Version: {server_info.version}",
+                description=server_info,
             )
             format_embed(embed_message)
     except Exception as e:
